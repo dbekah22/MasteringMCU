@@ -1,0 +1,7 @@
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/arch=x86_64
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/os=macosx
+configDescList=org.eclipse.launchbar.core.descriptorType.default\:LED_Toggle_001 Run,org.eclipse.launchbar.core.descriptorType.default\:Clock_Switching Run,org.eclipse.launchbar.core.descriptorType.default\:Button_interrupt Debug,org.eclipse.launchbar.core.descriptorType.default\:stm32f4xx_drivers_scratch Debug
+eclipse.preferences.version=1
+org.eclipse.launchbar.core.descriptorType.default\:Clock_Switching\ Run/activeLaunchMode=debug
+org.eclipse.launchbar.core.descriptorType.default\:LED_Toggle_001\ Run/activeLaunchMode=run
+org.eclipse.launchbar.core.descriptorType.default\:LED_Toggle_001\ Run/activeLaunchTarget=org.eclipse.launchbar.core.launchTargetType.local\:Local

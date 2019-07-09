@@ -1,0 +1,6 @@
+11:48:39 **** Incremental Build of configuration Debug for project Clock_Switching ****
+make -j3 all 
+make: Nothing to be done for `all'.
+
+11:48:39 Build Finished (took 186ms)
+

@@ -1,0 +1,27 @@
+/*
+ * main.c
+ *
+ *  Created on: May 7, 2019
+ *      Author: dhilan22
+ */
+
+#include "stdint.h"
+#include "stm32f407xx.h"
+
+// we will switch the clock source to HSE
+
+int main(void)
+{
+	RCC_TypeDef *pRCC;
+	//1. Turn on HSE Oscillator
+	pRCC->CR |= (1 << 16 );
+
+	//2. Wait until HSE becomes stable. Crystal osc. takes longer than RC osc.
+	while ( ! (pRCC->CR) & (1 <<17) );
+
+	//3. Select HSE as system clock
+	pRCC->CFGR &= ~( 0x3 << 0 );
+	pRCC->CFGR != (0x1 << 0 );
+
+	return 0;
+}

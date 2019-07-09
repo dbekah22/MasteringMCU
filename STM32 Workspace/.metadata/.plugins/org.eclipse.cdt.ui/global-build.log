@@ -1,0 +1,125 @@
+13:52:13 **** Incremental Build of configuration Debug for project stm32f4xx_drivers_scratch ****
+make -j3 all 
+Building file: ../startup/startup_stm32.s
+Building file: ../src/009USART_Case.c
+Building file: ../drivers/src/stm32f407xx_gpio.c
+Invoking: MCU GCC Assembler
+Invoking: MCU GCC Compiler
+Invoking: MCU GCC Compiler
+/Users/dhilan22/Documents/Learning/Embedded Systems/MasteringMCU/STM32 Workspace/stm32f4xx_drivers_scratch/Debug
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=soft -DSTM32 -DSTM32F4 -DSTM32F407VGTx -DSTM32F407G_DISC1 -DDEBUG -I"/Users/dhilan22/Documents/Learning/Embedded Systems/MasteringMCU/STM32 Workspace/stm32f4xx_drivers_scratch/drivers/inc" -O0 -g3 -Wall -fmessage-length=0 -ffunction-sections -c -MMD -MP -MF"drivers/src/stm32f407xx_gpio.d" -MT"drivers/src/stm32f407xx_gpio.o" -o "drivers/src/stm32f407xx_gpio.o" "../drivers/src/stm32f407xx_gpio.c"
+/Users/dhilan22/Documents/Learning/Embedded Systems/MasteringMCU/STM32 Workspace/stm32f4xx_drivers_scratch/Debug
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=soft -DSTM32 -DSTM32F4 -DSTM32F407VGTx -DSTM32F407G_DISC1 -DDEBUG -I"/Users/dhilan22/Documents/Learning/Embedded Systems/MasteringMCU/STM32 Workspace/stm32f4xx_drivers_scratch/drivers/inc" -O0 -g3 -Wall -fmessage-length=0 -ffunction-sections -c -MMD -MP -MF"src/009USART_Case.d" -MT"src/009USART_Case.o" -o "src/009USART_Case.o" "../src/009USART_Case.c"
+/Users/dhilan22/Documents/Learning/Embedded Systems/MasteringMCU/STM32 Workspace/stm32f4xx_drivers_scratch/Debug
+arm-none-eabi-as -mcpu=cortex-m4 -mthumb -mfloat-abi=soft -g -o "startup/startup_stm32.o" "../startup/startup_stm32.s"
+Finished building: ../startup/startup_stm32.s
+ 
+Building file: ../drivers/src/stm32f407xx_i2c.c
+Invoking: MCU GCC Compiler
+/Users/dhilan22/Documents/Learning/Embedded Systems/MasteringMCU/STM32 Workspace/stm32f4xx_drivers_scratch/Debug
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=soft -DSTM32 -DSTM32F4 -DSTM32F407VGTx -DSTM32F407G_DISC1 -DDEBUG -I"/Users/dhilan22/Documents/Learning/Embedded Systems/MasteringMCU/STM32 Workspace/stm32f4xx_drivers_scratch/drivers/inc" -O0 -g3 -Wall -fmessage-length=0 -ffunction-sections -c -MMD -MP -MF"drivers/src/stm32f407xx_i2c.d" -MT"drivers/src/stm32f407xx_i2c.o" -o "drivers/src/stm32f407xx_i2c.o" "../drivers/src/stm32f407xx_i2c.c"
+In file included from /Users/dhilan22/Documents/Learning/Embedded Systems/MasteringMCU/STM32 Workspace/stm32f4xx_drivers_scratch/drivers/inc/stm32f407xx.h:586:0,
+                 from ../src/009USART_Case.c:10:
+../src/009USART_Case.c: In function 'USART2_Init':
+/Users/dhilan22/Documents/Learning/Embedded Systems/MasteringMCU/STM32 Workspace/stm32f4xx_drivers_scratch/drivers/inc/stm32f407xx_usart.h:50:28: warning: large integer implicitly truncated to unsigned type [-Woverflow]
+ #define USART_BAUD_115200  115200
+                            ^
+../src/009USART_Case.c:33:49: note: in expansion of macro 'USART_BAUD_115200'
+  usart2_handle.USART_PinConfig.USART_BaudRate = USART_BAUD_115200;
+                                                 ^~~~~~~~~~~~~~~~~
+../src/009USART_Case.c: In function 'main':
+../src/009USART_Case.c:119:46: warning: pointer targets in passing argument 2 of 'USART_ReceiveDataIT' differ in signedness [-Wpointer-sign]
+   while ( USART_ReceiveDataIT(&usart2_handle,rx_buf,strlen(msg[cnt])) != USART_READY );
+                                              ^~~~~~
+In file included from /Users/dhilan22/Documents/Learning/Embedded Systems/MasteringMCU/STM32 Workspace/stm32f4xx_drivers_scratch/drivers/inc/stm32f407xx.h:586:0,
+                 from ../src/009USART_Case.c:10:
+/Users/dhilan22/Documents/Learning/Embedded Systems/MasteringMCU/STM32 Workspace/stm32f4xx_drivers_scratch/drivers/inc/stm32f407xx_usart.h:118:9: note: expected 'uint8_t * {aka unsigned char *}' but argument is of type 'char *'
+ uint8_t USART_ReceiveDataIT(USART_Handle_t *pUSARTHandle, uint8_t *pRxBuffer, uint32_t Len);
+         ^~~~~~~~~~~~~~~~~~~
+Finished building: ../drivers/src/stm32f407xx_gpio.c
+ 
+Finished building: ../src/009USART_Case.c
+Building file: ../drivers/src/stm32f407xx_rcc.c
+ 
+Invoking: MCU GCC Compiler
+Building file: ../drivers/src/stm32f407xx_spi.c
+/Users/dhilan22/Documents/Learning/Embedded Systems/MasteringMCU/STM32 Workspace/stm32f4xx_drivers_scratch/Debug
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=soft -DSTM32 -DSTM32F4 -DSTM32F407VGTx -DSTM32F407G_DISC1 -DDEBUG -I"/Users/dhilan22/Documents/Learning/Embedded Systems/MasteringMCU/STM32 Workspace/stm32f4xx_drivers_scratch/drivers/inc" -O0 -g3 -Wall -fmessage-length=0 -ffunction-sections -c -MMD -MP -MF"drivers/src/stm32f407xx_rcc.d" -MT"drivers/src/stm32f407xx_rcc.o" -o "drivers/src/stm32f407xx_rcc.o" "../drivers/src/stm32f407xx_rcc.c"
+Invoking: MCU GCC Compiler
+/Users/dhilan22/Documents/Learning/Embedded Systems/MasteringMCU/STM32 Workspace/stm32f4xx_drivers_scratch/Debug
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=soft -DSTM32 -DSTM32F4 -DSTM32F407VGTx -DSTM32F407G_DISC1 -DDEBUG -I"/Users/dhilan22/Documents/Learning/Embedded Systems/MasteringMCU/STM32 Workspace/stm32f4xx_drivers_scratch/drivers/inc" -O0 -g3 -Wall -fmessage-length=0 -ffunction-sections -c -MMD -MP -MF"drivers/src/stm32f407xx_spi.d" -MT"drivers/src/stm32f407xx_spi.o" -o "drivers/src/stm32f407xx_spi.o" "../drivers/src/stm32f407xx_spi.c"
+Finished building: ../drivers/src/stm32f407xx_rcc.c
+ 
+Building file: ../drivers/src/stm32f407xx_usart.c
+Invoking: MCU GCC Compiler
+/Users/dhilan22/Documents/Learning/Embedded Systems/MasteringMCU/STM32 Workspace/stm32f4xx_drivers_scratch/Debug
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=soft -DSTM32 -DSTM32F4 -DSTM32F407VGTx -DSTM32F407G_DISC1 -DDEBUG -I"/Users/dhilan22/Documents/Learning/Embedded Systems/MasteringMCU/STM32 Workspace/stm32f4xx_drivers_scratch/drivers/inc" -O0 -g3 -Wall -fmessage-length=0 -ffunction-sections -c -MMD -MP -MF"drivers/src/stm32f407xx_usart.d" -MT"drivers/src/stm32f407xx_usart.o" -o "drivers/src/stm32f407xx_usart.o" "../drivers/src/stm32f407xx_usart.c"
+../drivers/src/stm32f407xx_usart.c: In function 'USART_IRQHandling':
+../drivers/src/stm32f407xx_usart.c:474:26: warning: variable 'temp3' set but not used [-Wunused-but-set-variable]
+  uint32_t temp1 , temp2, temp3;
+                          ^~~~~
+Finished building: ../drivers/src/stm32f407xx_i2c.c
+Finished building: ../drivers/src/stm32f407xx_spi.c
+ 
+ 
+Finished building: ../drivers/src/stm32f407xx_usart.c
+ 
+Building target: stm32f4xx_drivers_scratch.elf
+Invoking: MCU GCC Linker
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=soft -specs=rdimon.specs -lc -lrdimon -T"/Users/dhilan22/Documents/Learning/Embedded Systems/MasteringMCU/STM32 Workspace/stm32f4xx_drivers_scratch/LinkerScript.ld" -Wl,-Map=output.map -Wl,--gc-sections -o "stm32f4xx_drivers_scratch.elf" @"objects.list"   -lm
+Finished building target: stm32f4xx_drivers_scratch.elf
+ 
+/Applications/Xcode.app/Contents/Developer/usr/bin/make --no-print-directory post-build
+Generating binary and Printing size information:
+arm-none-eabi-objcopy -O binary "stm32f4xx_drivers_scratch.elf" "stm32f4xx_drivers_scratch.bin"
+arm-none-eabi-size "stm32f4xx_drivers_scratch.elf"
+   text	   data	    bss	    dec	    hex	filename
+  31084	   2536	   2380	  36000	   8ca0	stm32f4xx_drivers_scratch.elf
+ 
+13:52:36 **** Programming project stm32f4xx_drivers_scratch on chip ****
+/Users/dhilan22/Applications/OpenSTM32/AC6/SystemWorkbench.app/Contents/Eclipse/plugins/fr.ac6.mcu.externaltools.openocd.macos64_1.23.0.201904120827/tools/openocd/bin/openocd -f stm32.flash.5322849498273705560.cfg -s "/Users/dhilan22/Documents/Learning/Embedded Systems/MasteringMCU/STM32 Workspace/stm32f4xx_drivers_scratch" -s /Users/dhilan22/Applications/OpenSTM32/AC6/SystemWorkbench.app/Contents/Eclipse/plugins/fr.ac6.mcu.debug_2.5.0.201904120827/resources/openocd/st_scripts -c "program Debug/stm32f4xx_drivers_scratch.elf verify reset " -c shutdown 
+Open On-Chip Debugger 0.10.0+dev-00021-g524e8c8 (2019-04-12-08:42)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+srst_only separate srst_nogate srst_open_drain connect_assert_srst
+Info : The selected transport took over low-level target control. The results might differ compared to plain JTAG/SWD
+adapter speed: 8000 kHz
+adapter_nsrst_delay: 100
+Info : clock speed 8000 kHz
+Info : STLINK v2.1 JTAG v25 API v2 M14 VID 0x0483 PID 0x374B
+Info : using stlink api v2
+Info : Target voltage: 2.910940
+Info : Unable to match requested speed 8000 kHz, using 4000 kHz
+Info : Stlink adapter speed set to 4000 kHz
+Info : STM32F407VGTx.cpu: hardware has 6 breakpoints, 4 watchpoints
+Info : Listening on port 3333 for gdb connections
+target halted due to debug-request, current mode: Thread 
+xPSR: 0x01000000 pc: 0x080011ac msp: 0x20020000
+configuring PLL
+Info : Unable to match requested speed 8000 kHz, using 4000 kHz
+Info : Stlink adapter speed set to 4000 kHz
+Info : Unable to match requested speed 8000 kHz, using 4000 kHz
+adapter speed: 4000 kHz
+** Programming Started **
+auto erase enabled
+Info : device id = 0x10076413
+Info : flash size = 1024kbytes
+target halted due to breakpoint, current mode: Thread 
+xPSR: 0x61000000 pc: 0x20000046 msp: 0x20020000
+wrote 49152 bytes from file Debug/stm32f4xx_drivers_scratch.elf in 1.545996s (31.048 KiB/s)
+** Programming Finished **
+** Verify Started **
+target halted due to breakpoint, current mode: Thread 
+xPSR: 0x61000000 pc: 0x2000002e msp: 0x20020000
+target halted due to breakpoint, current mode: Thread 
+xPSR: 0x61000000 pc: 0x2000002e msp: 0x20020000
+verified 33648 bytes in 0.375768s (87.446 KiB/s)
+** Verified OK **
+** Resetting Target **
+target halted due to breakpoint, current mode: Thread 
+xPSR: 0x21000000 pc: 0x080017f0 msp: 0x2001ffb0
+shutdown command invoked
+13:53:52 **** Incremental Build of configuration Debug for project stm32f4xx_drivers_scratch ****
+make -j3 all 
+make: Nothing to be done for `all'.

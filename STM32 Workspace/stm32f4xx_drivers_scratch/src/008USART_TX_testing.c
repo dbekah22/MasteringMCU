@@ -1,0 +1,106 @@
+/*
+ * 008USART_TX_testing.c
+ *
+ *  Created on: Jul 5, 2019
+ *      Author: dhilan22
+ */
+
+#include<stdio.h>
+#include<string.h>
+#include "stm32f407xx.h"
+
+char msg[1024] = "USART Tx testing...\n\r";
+
+USART_Handle_t usart2_handle;
+
+/* For this source file, the exercise will be to send a message string through USART from STM32->Arduino:
+ * Initialize the appropriate GPIO pins to work for USART communication (refer to Alt. Function Mapping and
+ * select the set of USART pins for the correct application)
+ * 	PA2 --> USART2_TX (connected to Arduino RX (0))
+ * 	PA3 --> USART2_RX (connected to Arduino TX (1))
+ * 	Alternate Function Mode --> 7
+ */
+void USART_GPIOInit(void)
+{
+	GPIO_Handle_t USARTPins;
+
+	USARTPins.pGPIOx = GPIOA;
+	USARTPins.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_ALTFUN;
+	USARTPins.GPIO_PinConfig.GPIO_PinOPType = GPIO_OP_TYPE_PP;
+	USARTPins.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_PIN_PU;
+	USARTPins.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_FAST;
+	USARTPins.GPIO_PinConfig.GPIO_AltFunMode = 7;
+
+	//USART2 TX
+	USARTPins.GPIO_PinConfig.GPIO_PinNum = GPIO_PIN_2;
+	GPIO_Init(&USARTPins);
+
+	//USART2 RX
+	USARTPins.GPIO_PinConfig.GPIO_PinNum = GPIO_PIN_3;
+	GPIO_Init(&USARTPins);
+}
+
+
+void USART2_Init(void)
+{
+	usart2_handle.pUSARTx = USART2;
+	usart2_handle.USART_PinConfig.USART_BaudRate = USART_BAUD_115200;
+	usart2_handle.USART_PinConfig.USART_HWFlowControl = USART_HWFC_NONE;
+	usart2_handle.USART_PinConfig.USART_Mode = USART_MODE_TX_ONLY;
+	usart2_handle.USART_PinConfig.USART_NoStopBits = USART_STOPBITS_1;
+	usart2_handle.USART_PinConfig.USART_WordLength = USART_WORDLEN_8BITS;
+	usart2_handle.USART_PinConfig.USART_ParityControl = USART_PARITY_DI;
+	USART_Init(&usart2_handle);
+}
+
+void GPIO_ButtonInit(void)
+{
+	GPIO_Handle_t GpioBlueBtn;
+	memset(&GpioBlueBtn,0,sizeof(GpioBlueBtn));						// Clear default garbage bits
+	GpioBlueBtn.pGPIOx = GPIOA;										// Create structure pointer and set to port A (user button found there)
+	GpioBlueBtn.GPIO_PinConfig.GPIO_PinNum = GPIO_PIN_0;			// Set pin number to 0 (corresponds to blue user button)
+	GpioBlueBtn.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_IN;			// Pin mode is input
+	GpioBlueBtn.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_FAST;		// Set speed to fast
+	GpioBlueBtn.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_NO_PUPD;
+	GPIO_Init(&GpioBlueBtn);
+
+	GPIO_Handle_t GpioLED1;										// Create a handle for the GPIO LED pin
+	memset(&GpioLED1,0,sizeof(GpioLED1));						// Clear default garbage bits
+	GpioLED1.pGPIOx = GPIOD;									// Create structure pointer and set to port D (since LED pins are found there)
+	GpioLED1.GPIO_PinConfig.GPIO_PinNum = GPIO_PIN_12;			// Set pin number to 12 (corresponds to green LED)
+	GpioLED1.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_OUT;		// Set pin mode to output (default is push-pull)
+	GpioLED1.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_FAST;	// Set speed to fast
+	GpioLED1.GPIO_PinConfig.GPIO_PinOPType = GPIO_OP_TYPE_PP;	// Push-pull
+	GpioLED1.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_NO_PUPD;
+	GPIO_Init(&GpioLED1);
+}
+
+void delay(void)
+{
+	for (uint32_t i=0; i<500000/2; i++); // ~200 ms if system clock is at 16 MHz
+}
+
+int main(void)
+{
+	// Initialize all required pins and ports
+	GPIO_ButtonInit();
+	USART_GPIOInit();
+	USART2_Init();
+
+	// Enable USART2 peripheral
+	USART_PeriControl(USART2, ENABLE);
+
+    while(1)
+    {
+		// Wait until button is pressed
+		while( ! GPIO_ReadPin(GPIOA,GPIO_PIN_0) );
+		delay();	// To avoid button de-bouncing related issues
+		GPIO_TogglePin(GPIOD, GPIO_PIN_12);		// testing/debugging to ensure button is working
+		delay();
+
+		USART_SendData(&usart2_handle,(uint8_t*)msg,strlen(msg));
+    }
+
+	return 0;
+}
+

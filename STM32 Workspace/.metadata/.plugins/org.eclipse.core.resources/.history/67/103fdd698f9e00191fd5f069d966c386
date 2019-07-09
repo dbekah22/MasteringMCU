@@ -1,0 +1,30 @@
+/*
+ * stm32f407xx_rcc.c
+ *
+ *  Created on: Jul 4, 2019
+ *      Author: dhilan22
+ */
+
+#include "stm32f407xx_rcc.h"
+
+
+
+
+/************************************************************************
+ * @fn			- RCC_GetPLLOutputClk
+ *
+ * @brief		- This function returns the system clock frequency when PLL is used
+ *
+ * @none		- none
+ *
+ * @return		- PLL_Clk
+ *
+ * @Note		- This function is not yet implemented since the PLL oscillator will not be used in the
+ * 				  scope of this MCU development course
+ *
+ */
+uint32_t RCC_GetPLLOutputClk(void)
+{
+	uint32_t PLL_Clk;
+	return PLL_Clk;
+}

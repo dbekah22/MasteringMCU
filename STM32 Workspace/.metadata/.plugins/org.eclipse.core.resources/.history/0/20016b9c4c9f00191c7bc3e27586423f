@@ -1,0 +1,26 @@
+/*
+ * 008USART_TX_testing.c
+ *
+ *  Created on: Jul 5, 2019
+ *      Author: dhilan22
+ */
+
+#include<stdio.h>
+#include<string.h>
+#include "stm32f407xx.h"
+
+char msg[1024] = "USART Tx testing...\n\r";
+
+USART_Handle_t usart2_handle;
+
+void USART2_Init(void)
+{
+	usart2_handle.pUSARTx = USART2;
+	usart2_handle.USART_PinConfig.USART_BaudRate = USART_BAUD_115200;
+	usart2_handle.USART_PinConfig.USART_HWFlowControl = USART_HWFC_NONE;
+	usart2_handle.USART_PinConfig.USART_Mode = USART_MODE_TX_ONLY;
+	usart2_handle.USART_PinConfig.USART_NoStopBits = USART_STOPBITS_1;
+	usart2_handle.USART_PinConfig.USART_WordLength = USART_WORDLEN_8BITS;
+	usart2_handle.USART_PinConfig.USART_ParityControl = USART_PARITY_DI;
+	USART_Init(&usart2_handle);
+}

@@ -1,0 +1,284 @@
+/*
+ * stm32f407xx_gpio.c
+ *
+ *  Created on: May 21, 2019
+ *      Author: dhilan22
+ *
+ *      GPIO Driver Source File
+ */
+
+#include "stm32f407xx_gpio.h"
+
+/************************************************************************
+ * @fn			- GPIO_PeriCLKControl
+ *
+ * @brief		- This function enables or disables peripheral clocks for GPIO ports
+ *
+ * @pGPIOx		- Base address pointer to GPIO peripheral
+ * @ENorDI		- Enable or Disable macros
+ *
+ * @return		- none
+ *
+ * @Note		- none
+ *
+ */
+void GPIO_PeriCLKControl(GPIO_RegDef_t *pGPIOx, uint8_t ENorDI)
+{
+	if (ENorDI == ENABLE)
+	{
+		if (pGPIOx == GPIOA) {
+			GPIOA_PCLK_EN();
+		} else if (pGPIOx == GPIOB) {
+			GPIOB_PCLK_EN();
+		} else if (pGPIOx == GPIOC) {
+			GPIOC_PCLK_EN();
+		} else if (pGPIOx == GPIOD) {
+			GPIOD_PCLK_EN();
+		} else if (pGPIOx == GPIOE) {
+			GPIOE_PCLK_EN();
+		} else if (pGPIOx == GPIOF) {
+			GPIOF_PCLK_EN();
+		} else if (pGPIOx == GPIOG) {
+			GPIOG_PCLK_EN();
+		} else if (pGPIOx == GPIOH) {
+			GPIOH_PCLK_EN();
+		} else if (pGPIOx == GPIOI) {
+			GPIOI_PCLK_EN();
+		} else if (pGPIOx == GPIOJ) {
+			GPIOJ_PCLK_EN();
+		} else if (pGPIOx == GPIOK) {
+			GPIOK_PCLK_EN();
+		}
+	}
+	else
+	{
+		if (pGPIOx == GPIOA) {
+			GPIOA_PCLK_DI();
+		} else if (pGPIOx == GPIOB) {
+			GPIOB_PCLK_DI();
+		} else if (pGPIOx == GPIOC) {
+			GPIOC_PCLK_DI();
+		} else if (pGPIOx == GPIOD) {
+			GPIOD_PCLK_DI();
+		} else if (pGPIOx == GPIOE) {
+			GPIOE_PCLK_DI();
+		} else if (pGPIOx == GPIOF) {
+			GPIOF_PCLK_DI();
+		} else if (pGPIOx == GPIOG) {
+			GPIOG_PCLK_DI();
+		} else if (pGPIOx == GPIOH) {
+			GPIOH_PCLK_DI();
+		} else if (pGPIOx == GPIOI) {
+			GPIOI_PCLK_DI();
+		} else if (pGPIOx == GPIOJ) {
+			GPIOJ_PCLK_DI();
+		} else if (pGPIOx == GPIOK) {
+			GPIOK_PCLK_DI();
+		}
+	}
+}
+
+
+/************************************************************************
+ * @fn			- GPIO_Init
+ *
+ * @brief		- This function initializes the appropriate GPIO ports / pins
+ *
+ * @pGPIOHandle	- Pointer to handle access to different GPIO registers for configuration
+ *
+ * @return		- none
+ *
+ * @Note		- It is important to use bitwise OR to set the physical registers in
+ * 				  order to prevent affecting all the bits in the register
+ *
+ */
+void GPIO_Init(GPIO_Handle_t *pGPIOHandle)
+{
+	uint32_t temp = 0;
+
+	// 1. Configure Mode
+	if (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode <= GPIO_MODE_ANALOG)
+	{
+		// Non-interrupt Modes
+		temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNum) );
+		// The following will clear (reset) the bit field by negating binary 11 (represented by 0x3 in hexadecimal) in the two-bit field
+		pGPIOHandle->pGPIOx->MODER &= ~(0x3 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNum);
+		// The following then sets the register's bit field to the value stored in temp
+		pGPIOHandle->pGPIOx->MODER |= temp;
+
+	} else {
+		// Interrupt Modes
+	}
+	temp = 0;
+
+	// 2. Configure Speed
+	temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinSpeed << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNum) );
+	pGPIOHandle->pGPIOx->OSPEEDR &= ~(0x3 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNum);
+	pGPIOHandle->pGPIOx->OSPEEDR |= temp;
+	temp = 0;
+
+	// 3. Configure Pull-up / Pull-down
+	temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinPuPdControl << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNum) );
+	pGPIOHandle->pGPIOx->PUPDR &= ~(0x3 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNum);
+	pGPIOHandle->pGPIOx->PUPDR |= temp;
+	temp = 0;
+
+	// 4. Configure OPType
+	temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinOPType << pGPIOHandle->GPIO_PinConfig.GPIO_PinNum );
+	pGPIOHandle->pGPIOx->OTYPER &= ~(0x1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNum);
+	pGPIOHandle->pGPIOx->OTYPER |= temp;
+	temp = 0;
+
+	// 5. Configure Alt. Functionality
+	if (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode <= GPIO_MODE_ALTFUN)
+	{
+		// Configure alt.function registers
+		uint8_t temp1, temp2;
+		temp1 = (pGPIOHandle->GPIO_PinConfig.GPIO_PinNum) / 8;
+		temp2 = (pGPIOHandle->GPIO_PinConfig.GPIO_PinNum) % 8;
+		// Reset 4-bit field by negating binary 1111, represented as 0xF in hexadecimal
+		pGPIOHandle->pGPIOx->AFR[temp1] &= ~(0xF << (4 * temp2) );
+		pGPIOHandle->pGPIOx->AFR[temp1] |= (pGPIOHandle->GPIO_PinConfig.GPIO_AltFunMode << (4 * temp2) );
+	}
+}
+
+
+/************************************************************************
+ * @fn			- GPIO_DeInit
+ *
+ * @brief		- This function de-initializes the appropriate GPIO ports / pins
+ *
+ * @pGPIOHandle	-
+ *
+ * @return		- none
+ *
+ * @Note		- none
+ *
+ */
+void GPIO_DeInit(GPIO_RegDef_t *pGPIOx)
+{
+	if (pGPIOx == GPIOA) {
+		GPIOA_REG_RESET();
+	} else if (pGPIOx == GPIOB) {
+		GPIOB_REG_RESET();
+	} else if (pGPIOx == GPIOC) {
+		GPIOC_REG_RESET();
+	} else if (pGPIOx == GPIOD) {
+		GPIOD_REG_RESET();
+	} else if (pGPIOx == GPIOE) {
+		GPIOE_REG_RESET();
+	} else if (pGPIOx == GPIOF) {
+		GPIOF_REG_RESET();
+	} else if (pGPIOx == GPIOG) {
+		GPIOG_REG_RESET();
+	} else if (pGPIOx == GPIOH) {
+		GPIOH_REG_RESET();
+	} else if (pGPIOx == GPIOI) {
+		GPIOI_REG_RESET();
+	} else if (pGPIOx == GPIOJ) {
+		GPIOJ_REG_RESET();
+	} else if (pGPIOx == GPIOK) {
+		GPIOK_REG_RESET();
+	}
+}
+
+/************************************************************************
+ * @fn			- GPIO_ReadPin
+ *
+ * @brief		- This function reads data from the input pin
+ *
+ * @pGPIOx		- Base address pointer to GPIO peripheral
+ * @PinNum		- Pin Number
+ *
+ * @return		- 0 or 1
+ *
+ * @Note		- To read the value at the nth pin in the input data register (IDR), right shift the
+ * 				  bit position by n to bring it to the 0th position, and then mask all other bits and
+ * 				  return just the value at the 0th position (i.e. only 0th position will have a 1)
+ *
+ */
+uint8_t GPIO_ReadPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNum)
+{
+	uint8_t value;
+	value = (uint8_t)((pGPIOx->IDR >> PinNum) & 0x00000001);
+	return value;
+}
+
+/************************************************************************
+ * @fn			- GPIO_ReadPort
+ *
+ * @brief		- This function reads data from the input port
+ *
+ * @pGPIOx		- Base address pointer to GPIO peripheral
+ *
+ * @return		- Value
+ *
+ * @Note		- none
+ *
+ */
+uint16_t GPIO_ReadPort(GPIO_RegDef_t *pGPIOx)
+{
+	uint16_t value;
+	value = (uint16_t)(pGPIOx->IDR);
+	return value;
+}
+
+/************************************************************************
+ * @fn			- GPIO_WritePin
+ *
+ * @brief		- This function writes data to the ODR for the appropriate output pin
+ *
+ * @pGPIOx		- Base address pointer to GPIO peripheral
+ * @PinNum		- Pin Number
+ * @Value		- Value to be written to pin (0 or 1)
+ *
+ * @return		- none
+ *
+ * @Note		- none
+ *
+ */
+void GPIO_WritePin(GPIO_RegDef_t *pGPIOx, uint8_t PinNum, uint8_t Value)
+{
+	if (Value == GPIO_PIN_SET) { pGPIOx->ODR |= (1 << PinNum); } // Write 1
+	else { pGPIOx->ODR &= ~(1 << PinNum); }						 // Write 0
+}
+
+/************************************************************************
+ * @fn			- GPIO_WritePort
+ *
+ * @brief		- This function writes data to the ODR for the appropriate port
+ *
+ * @pGPIOx		- Base address pointer to GPIO peripheral
+ * @Value		- Value to be written to port
+ *
+ * @return		- none
+ *
+ * @Note		- none
+ *
+ */
+void GPIO_WritePort(GPIO_RegDef_t *pGPIOx, uint16_t Value)
+{
+	pGPIOx->ODR = Value;
+}
+
+/************************************************************************
+ * @fn			- GPIO_TogglePin
+ *
+ * @brief		- This function toggles the required bit field for the corresponding pin
+ *
+ * @pGPIOx		- Base address pointer to GPIO peripheral
+ * @PinNum		- Pin Number
+ *
+ * @return		- none
+ *
+ * @Note		- none
+ *
+ */
+void GPIO_TogglePin(GPIO_RegDef_t *pGPIOx, uint8_t PinNum)
+{
+	pGPIOx->ODR ^= (1 << PinNum);
+}
+
+// IRQ Configuration and ISR Handling
+void GPIO_IRQConfig(uint8_t IRQNum, uint8_t IRQPriority, uint8_t ENorDI);
+void GPIO_IRQHandling(uint8_t PinNum);

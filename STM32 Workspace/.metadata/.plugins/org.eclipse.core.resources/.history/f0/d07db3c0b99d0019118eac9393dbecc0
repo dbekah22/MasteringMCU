@@ -1,0 +1,183 @@
+/*
+ * 007I2C_SlaveTX_testing.c
+ *
+ *  Created on: Jul 3, 2019
+ *      Author: dhilan22
+ */
+
+#include <stdio.h>
+#include <string.h>
+#include "stm32f407xx.h"
+
+#define SLAVE_ADDR	0x68	// An incorrect address will result in ACK failure error (AF) and transmission termination
+#define MY_ADDR		SLAVE_ADDR
+
+uint8_t commandCode;
+
+// Buffer for data being received (of length <= 32 bytes)
+// uint8_t Tx_buf[32] = "STM32 Slave Mode Testing";
+
+// Buffer for data being received (of length > 32 bytes)
+uint8_t Tx_buf[] = "STM32 Slave Mode Testing for strings greater than 32 bytes in length... HIHIHIHIHIHIHIHIHHIHIHIHIHIHIHIHIHIHIHIHIHIHIHIHIHIHIHIHIHIHIHIHIHI";
+
+uint32_t data_len;
+
+I2C_Handle_t I2C1Handle;
+
+/* For this source file, the exercise will be to test Master TX (transmission) of a string through I2C:
+ * Initialize the appropriate GPIO pins to work for I2C communication (refer to Alt. Function Mapping and
+ * select the set of I2C pins for the correct application)
+ * 	PB6 --> I2C1_SCL
+ * 	PB7 --> I2C1_SDA
+ * 	Alternate Function Mode --> 4
+ */
+void I2C_GPIOInit(void)
+{
+	GPIO_Handle_t I2CPins;
+
+	I2CPins.pGPIOx = GPIOB;
+	I2CPins.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_ALTFUN;
+	I2CPins.GPIO_PinConfig.GPIO_AltFunMode = 4;
+	I2CPins.GPIO_PinConfig.GPIO_PinOPType = GPIO_OP_TYPE_OD;
+	I2CPins.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_PIN_PU;	// Required since a slave (STM32) is being driven, and want to avoid possibility of junk data being sent to it
+	I2CPins.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_FAST;
+
+	// SCL
+	I2CPins.GPIO_PinConfig.GPIO_PinNum = GPIO_PIN_6;
+	GPIO_Init(&I2CPins);
+
+	// SDA
+	I2CPins.GPIO_PinConfig.GPIO_PinNum = GPIO_PIN_7;
+	GPIO_Init(&I2CPins);
+
+}
+
+void I2C1_Init(void)
+{
+	I2C1Handle.pI2Cx = I2C1;
+	I2C1Handle.I2C_PinConfig.I2C_ACKControl = I2C_ACK_ENABLE;
+	I2C1Handle.I2C_PinConfig.I2C_DeviceAddress = MY_ADDR;	// Slave address since STM32 is acting as Slave now
+	I2C1Handle.I2C_PinConfig.I2C_FMDutyCycle = I2C_FM_2;
+	I2C1Handle.I2C_PinConfig.I2C_SCLSpeed = I2C_SCL_SPEED_SM;
+
+	I2C_Init(&I2C1Handle);
+}
+
+void GPIO_ButtonInit(void)
+{
+	GPIO_Handle_t GpioBlueBtn;
+	memset(&GpioBlueBtn,0,sizeof(GpioBlueBtn));						// Clear default garbage bits
+	GpioBlueBtn.pGPIOx = GPIOA;										// Create structure pointer and set to port A (user button found there)
+	GpioBlueBtn.GPIO_PinConfig.GPIO_PinNum = GPIO_PIN_0;			// Set pin number to 0 (corresponds to blue user button)
+	GpioBlueBtn.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_IN;			// Pin mode is input
+	GpioBlueBtn.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_FAST;		// Set speed to fast
+	GpioBlueBtn.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_NO_PUPD;
+	GPIO_Init(&GpioBlueBtn);
+}
+
+void delay(void)
+{
+	for (uint32_t i=0; i<500000/2; i++); // ~200 ms if system clock is at 16 MHz
+}
+
+int main(void)
+{
+	// Initialize all required pins and ports
+	GPIO_ButtonInit();
+	I2C_GPIOInit();
+	I2C1_Init();
+
+	// I2C IRQ Configurations - required in this src because slave application is always in interrupt mode
+	I2C_IRQInterruptConfig(IRQ_NO_I2C1_EV, ENABLE);
+	I2C_IRQInterruptConfig(IRQ_NO_I2C1_ER, ENABLE);
+	// No need to configure IRQ priority because there's only I2C interrupts here
+
+	I2C_SlaveENorDICallbackEvents(I2C1, ENABLE);
+
+	// Set ACK bit to 1 after PE=1 (hardware clears ACK bit to 0 when PE=0)
+	I2C_PeriControl(I2C1,ENABLE);
+	I2C_ManageAcking(I2C1,ENABLE);
+
+	while(1);
+}
+
+// Create IRQ Handlers
+
+void I2C1_EV_IRQHandler(void)
+{
+	I2C_EV_IRQHandling(&I2C1Handle);
+}
+
+void I2C1_ER_IRQHandler(void)
+{
+	I2C_ER_IRQHandling(&I2C1Handle);
+}
+
+void I2C_ApplicationEventCallback(I2C_Handle_t *pI2CHandle, uint8_t AppEv)
+{
+	static uint32_t count = 0;
+	static uint32_t w_ptr = 0;
+
+	if (AppEv == I2C_EVENT_DATA_REQ)
+	{
+		// Master is requesting some data
+		if (commandCode == 0x51)
+		{
+			if (data_len <= 32)
+			{
+				// Send 1 byte of length information to master
+				I2C_SlaveSendData(pI2CHandle->pI2Cx, data_len);
+			} else
+			{
+				// Send 4 bytes of length information to master
+				I2C_SlaveSendData( pI2CHandle->pI2Cx, ((data_len >> ((count%4) * 8)) & 0xFF) );
+				count++;
+			}
+
+		} else if (commandCode == 0x52)
+		{
+			if (data_len <= 32)
+			{
+				// Send contents of Tx_buf indexed by count variable
+				I2C_SlaveSendData(pI2CHandle->pI2Cx, Tx_buf[count++]);
+			} else
+			{
+				// Send contents of Tx_buf indexed by w_ptr variable
+				I2C_SlaveSendData(pI2CHandle->pI2Cx, Tx_buf[w_ptr++]);
+			}
+		}
+	} else if (AppEv == I2C_EVENT_DATA_RCV)
+	{
+		// Data is waiting for the slave to read - slave has to read it
+		commandCode = I2C_SlaveReceiveData(pI2CHandle->pI2Cx);
+
+	} else if (AppEv == I2C_ERROR_AF)
+	{
+		// Happens only during Slave TXing
+		// Master has sent NACK, so slave should note that master no longer wants data
+		if (data_len <= 32)
+		{	// data is shorter than 32 bytes
+			commandCode = 0xff;	// Invalidating the commandCode
+			count = 0;
+
+		} else
+		{	// data is longer than 32 bytes
+			if (! (commandCode == 0x52) )	// Don't invalidate if current commandCode is 0x52
+				commandCode = 0xFF;
+
+			count = 0;
+
+			if (w_ptr >= (data_len))
+			{	// Slave concludes all bytes have been sent once w_ptr reached data_len
+				w_ptr = 0;
+				commandCode = 0xFF;
+			}
+		}
+
+	} else if (AppEv == I2C_EVENT_STOPF)
+	{
+		// Happens only during Slave RXing
+		// Master has ended I2C communication with slave
+		count = 0;
+	}
+}

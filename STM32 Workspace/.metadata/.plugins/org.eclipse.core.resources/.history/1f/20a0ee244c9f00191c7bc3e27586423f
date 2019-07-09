@@ -1,0 +1,16 @@
+/*
+ * 008USART_TX_testing.c
+ *
+ *  Created on: Jul 5, 2019
+ *      Author: dhilan22
+ */
+
+#include<stdio.h>
+#include<string.h>
+#include "stm32f407xx.h"
+
+char msg[1024] = "USART Tx testing...\n\r";
+
+USART_Handle_t usart2_handle;
+
+
